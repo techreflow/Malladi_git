@@ -9,8 +9,8 @@ import moment from 'moment';
 import Papa from 'papaparse';
 
 const corsAnywhere = 'https://cors-anywhere.herokuapp.com/';
-const csvUrl = 'https://malladi.s3.amazonaws.com/update.csv';
-const csvUrl2='https://malladi.s3.amazonaws.com/update.csv';
+const csvUrl = 'https://malladi.s3.amazonaws.com/AX301.csv';
+const csvUrl2='https://malladi.s3.amazonaws.com/AX302.csv';
 const proxiedUrl = corsAnywhere + csvUrl;
 const proxiedUrl2 = corsAnywhere + csvUrl2;
 
@@ -83,7 +83,7 @@ const Admindash = () => {
           const url = URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.setAttribute('download', 'filtered_output.csv');
+          link.setAttribute('download', 'AX301.csv');
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -109,7 +109,7 @@ const Admindash = () => {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', 'filtered_output.csv');
+        link.setAttribute('download', 'AX302.csv');
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -188,7 +188,7 @@ const Admindash = () => {
   const [allTopics2, setAllTopics2] = useState({});
   const username = import.meta.env.VITE_MQTT_USERNAME;
   const password = import.meta.env.VITE_MQTT_PASSWORD;
-  const topic = "AX3/01/#";
+  const topic = "AX3/01/MALLADI/#";
   const topic2 = "AX3/02/MALLADI/#";
   
 
@@ -628,7 +628,7 @@ const Admindash = () => {
     client.subscribe("AX3/02/MALLADI/2/CONFIG/FACTOR");
     client.subscribe("AX3/02/MALLADI/3/CONFIG/FACTOR");
 
-    client.subscribe("AX3/02/MALLADI/UPDATE_TIME");
+    client.subscribe("AX3/01/MALLADI/UPDATE_TIME");
 
 
   
@@ -724,7 +724,7 @@ const Admindash = () => {
         setFac13(data); // Update the value state with the received message
         console.log(data);
       }
-      if (topic === "AX3/02/MALLADI/UPDATE_TIME") {
+      if (topic === "AX3/01/MALLADI/UPDATE_TIME") {
         const data = message.toString();
         console.log(`Received message on topic '${topic}':`, data);
         setTime(data); // Update the value state with the received message
@@ -879,7 +879,7 @@ const Admindash = () => {
                     <th colSpan={2} >Range</th>
                     <th rowSpan={2} >Calibration</th>
                     <th rowSpan={2}>Factor
-  <p style={{ fontSize: 10, color: 'white', margin: 5 }}>Enter (* - + /)</p>
+                    <p style={{ fontSize: 10, color: 'white', margin: 5 }}>Enter (0= Addition ,1= Subtraction , 2= Multiplication, 3= Division)</p>
 </th>
                     <th rowSpan={2}>Readings</th>
                     <th rowSpan={2}>Calibrated Readings</th>
@@ -899,7 +899,23 @@ const Admindash = () => {
                   <td ><input type="number" min="-Infinity" max="Infinity" value={Min1|| "LOADING.."} onChange={(e) => setMin1(e.target.value)} /></td>
                   <td ><input type="number" min="-Infinity" max="Infinity" value={Max1 || "LOADING.."}onChange={(e) => setMax1(e.target.value)} /></td>
                   <td ><input type="number" min="-Infinity" max="Infinity" value={parseFloat(cal1).toFixed(2) || "" }onChange={(e) => setCal1(e.target.value)} /></td>
-                  <td><input type="text" min="-Infinity" max="Infinity" value={fac1 || "" }onChange={(e) => setFac1(e.target.value)}/></td>
+                  
+                  <td>
+  <select
+    style={{
+      fontSize: "24px",
+      height: "40px",
+      width: "100px"
+    }}
+    value={fac1 || ""}
+    onChange={(e) => setFac1(e.target.value)}
+  >
+    <option value="0">0</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+  </select>
+</td>
                     <td>
                       {parseFloat(allTopics["AX3/01/MALLADI/1/VALUE"]).toPrecision(
                         4
@@ -928,7 +944,7 @@ const Admindash = () => {
                         color: "white",
                       }}
                     >
-                      {allTopics["AX3/01/MALLADI/STATsUS"] || "ONLINE"}
+                      {allTopics["AX3/01/MALLADI/STATUS"] || "ONLINE"}
                     </td>
                     <td
                       rowSpan={3}
@@ -984,7 +1000,7 @@ const Admindash = () => {
             >
                 EXPORT
             </button>
-            <p style={{ fontSize: "12px", marginTop: "8px" }}>SNo: AX301</p>
+            <p style={{ fontSize: "12px", marginTop: "8px", fontWeight: "bold"}}>SNo: AX301</p>
         </div>
                     </td>
                   </tr>
@@ -994,7 +1010,22 @@ const Admindash = () => {
                   <td ><input type="number" min="-Infinity" max="Infinity" value={Min2|| "LOADING.."} onChange={(e) => setMin2(e.target.value)}/></td>
                   <td ><input type="number" min="-Infinity" max="Infinity" value={Max2|| "LOADING.."} onChange={(e) => setMax2(e.target.value)}/></td>
                   <td ><input type="number" min="-Infinity" max="Infinity" value={parseFloat(cal2).toFixed(2) || "" } onChange={(e) => setCal2(e.target.value)} /></td>
-                  <td><input type="text" min="-Infinity" max="Infinity" value={fac2 || "" }onChange={(e) => setFac2(e.target.value)}/></td>
+                  <td>
+  <select
+    style={{
+      fontSize: "24px",
+      height: "40px",
+      width: "100px"
+    }}
+    value={fac2 || ""}
+    onChange={(e) => setFac2(e.target.value)}
+  >
+    <option value="0">0</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+  </select>
+</td>
                     <td>
                       {parseFloat(allTopics["AX3/01/MALLADI/2/VALUE"]).toPrecision(
                         4
@@ -1019,7 +1050,22 @@ const Admindash = () => {
                   <td ><input type="number" min="-Infinity" max="Infinity" value={Min3|| "LOADING.."} onChange={(e) => setMin3(e.target.value)}/></td>
                   <td ><input type="number" min="-Infinity" max="Infinity" value={Max3|| "LOADING.."} onChange={(e) => setMax3(e.target.value)}/></td>
                   <td ><input type="number" min="-Infinity" max="Infinity" value={parseFloat(cal3).toFixed(2) || "LOADING...." } onChange={(e) => setCal3(e.target.value)}/></td>
-                  <td><input type="text" min="-Infinity" max="Infinity" value={fac3 || "" }onChange={(e) => setFac3(e.target.value)}/></td>
+                  <td>
+  <select
+    style={{
+      fontSize: "24px",
+      height: "40px",
+      width: "100px"
+    }}
+    value={fac3 || ""}
+    onChange={(e) => setFac3(e.target.value)}
+  >
+    <option value="0">0</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+  </select>
+</td>
                     <td>
                       {parseFloat(allTopics["AX3/01/MALLADI/3/VALUE"]).toPrecision(
                         4
@@ -1052,18 +1098,18 @@ const Admindash = () => {
 
 
                       
-              <table style={{marginTop:"90px"}}>
+              <table style={{marginTop:"20px"}}>
               <thead>
                   <tr>
                     <th rowSpan={2}>Serial No</th>
                     <th colSpan={2} >Range</th>
                     <th rowSpan={2} >Calibration</th>
                     <th rowSpan={2}>Factor
-  <p style={{ fontSize: 10, color: 'white', margin: 5 }}>Enter (* - + /)</p>
+  <p style={{ fontSize: 10, color: 'white', margin: 5 }}>Enter (0= Addition ,1= Subtraction , 2= Multiplication, 3= Division)</p>
 </th>
                     <th rowSpan={2}>Readings</th>
                     <th rowSpan={2}>Calibrated Readings</th>
-                    <th rowSpan={2}>Temperature Level</th>
+                    <th rowSpan={2}>Pressure Level</th>
                     <th rowSpan={2}>Status</th>
                     <th rowSpan={2}>Export Data</th>
                   </tr>
@@ -1079,16 +1125,31 @@ const Admindash = () => {
                   <td ><input type="number" min="-Infinity" max="Infinity" value={Min11|| "LOADING.."} onChange={(e) => setMin11(e.target.value)} /></td>
                   <td ><input type="number" min="-Infinity" max="Infinity" value={Max11 || "LOADING.."}onChange={(e) => setMax11(e.target.value)} /></td>
                   <td ><input type="number" min="-Infinity" max="Infinity" value={parseFloat(cal11).toFixed(2) || "" }onChange={(e) => setCal11(e.target.value)} /></td>
-                  <td><input type="text" min="-Infinity" max="Infinity" value={fac11 || "" }onChange={(e) => setFac11(e.target.value)}/></td>
+                  <td>
+  <select
+    style={{
+      fontSize: "24px",
+      height: "40px",
+      width: "100px"
+    }}
+    value={fac11 || ""}
+    onChange={(e) => setFac11(e.target.value)}
+  >
+    <option value="0">0</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+  </select>
+</td>
                     <td>
                       {parseFloat(allTopics2["AX3/02/MALLADI/1/VALUE"]).toPrecision(
                         4
-                      ) || "LOADING...."}  &deg;C
+                      ) || "LOADING...."}  Bar
                     </td>
                     <td>
                       {parseFloat(
                         allTopics2["AX3/02/MALLADI/1/CALIBRATED_VALUE"]
-                      ).toPrecision(4) || "LOADING...."}  &deg;C
+                      ).toPrecision(4) || "LOADING...."}  Bar
                     </td>
                     <td>
                       <meter
@@ -1103,12 +1164,13 @@ const Admindash = () => {
                       
                       style={{
                         background:
+                         "Online" ? "green" :
                           
-                         "Online" ? "green" : "rgb(245,106,94)",
+                         "rgb(245,106,94)",
                         color: "white",
                       }}
                     >
-                      {allTopics["AX3/01/MALLADI/STATsUS"] || "ONLINE"}
+                      {allTopics["AX3/01/MALLADI/STATUS"] || "ONLINE"}
                     </td>
                     <td
                       rowSpan={3}
@@ -1169,7 +1231,7 @@ const Admindash = () => {
                     EXPORT
                 </button>
                 {/* <img className="gear" style={{marginTop:"30px"}} onClick={toggleVisibility} src="./images/gear_icon.png" alt="gear" /> */}
-                <p style={{fontSize:"12px", marginTop:"8px"}}>SNo: AX302</p>
+                <p style={{fontSize:"12px", marginTop:"8px", fontWeight: "bold"}}>SNo: AX302</p>
             </div>
 
                     </td>
@@ -1180,16 +1242,31 @@ const Admindash = () => {
                   <td ><input type="number" min="-Infinity" max="Infinity" value={Min12|| "LOADING.."} onChange={(e) => setMin12(e.target.value)}/></td>
                   <td ><input type="number" min="-Infinity" max="Infinity" value={Max12|| "LOADING.."} onChange={(e) => setMax12(e.target.value)}/></td>
                   <td ><input type="number" min="-Infinity" max="Infinity" value={parseFloat(cal12).toFixed(2) || "" } onChange={(e) => setCal12(e.target.value)} /></td>
-                  <td><input type="text" min="-Infinity" max="Infinity" value={fac12 || "" }onChange={(e) => setFac12(e.target.value)}/></td>
+                  <td>
+  <select
+    style={{
+      fontSize: "24px",
+      height: "40px",
+      width: "100px"
+    }}
+    value={fac12 || ""}
+    onChange={(e) => setFac12(e.target.value)}
+  >
+    <option value="0">0</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+  </select>
+</td>
                     <td>
                       {parseFloat(allTopics2["AX3/02/MALLADI/2/VALUE"]).toPrecision(
                         4
-                      ) || "LOADING...."}  &deg;C
+                      ) || "LOADING...."}  Bar
                     </td>
                     <td>
                       {parseFloat(
                         allTopics2["AX3/02/MALLADI/2/CALIBRATED_VALUE"]
-                      ).toPrecision(4) || "LOADING...."}  &deg;C
+                      ).toPrecision(4) || "LOADING...."}  Bar
                     </td>
                     <td>
                       <meter
@@ -1205,16 +1282,31 @@ const Admindash = () => {
                   <td ><input type="number" min="-Infinity" max="Infinity" value={Min13|| "LOADING.."} onChange={(e) => setMin13(e.target.value)}/></td>
                   <td ><input type="number" min="-Infinity" max="Infinity" value={Max13|| "LOADING.."} onChange={(e) => setMax13(e.target.value)}/></td>
                   <td ><input type="number" min="-Infinity" max="Infinity" value={parseFloat(cal13).toFixed(2) || "LOADING...." } onChange={(e) => setCal13(e.target.value)}/></td>
-                  <td><input type="text" min="-Infinity" max="Infinity" value={fac13 || "" }onChange={(e) => setFac13(e.target.value)}/></td>
+                  <td>
+  <select
+    style={{
+      fontSize: "24px",
+      height: "40px",
+      width: "100px"
+    }}
+    value={fac13 || ""}
+    onChange={(e) => setFac13(e.target.value)}
+  >
+    <option value="0">0</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+  </select>
+</td>
                     <td>
                       {parseFloat(allTopics2["AX3/02/MALLADI/3/VALUE"]).toPrecision(
                         4
-                      )  || "LOADING...."} &deg;C
+                      )  || "LOADING...."} Bar
                     </td>
                     <td>
                       {parseFloat(
                         allTopics2["AX3/02/MALLADI/3/CALIBRATED_VALUE"]
-                      ).toPrecision(4) || "LOADING...."}  &deg;C
+                      ).toPrecision(4) || "LOADING...."}  Bar
                     </td>
                     <td>
                       <meter

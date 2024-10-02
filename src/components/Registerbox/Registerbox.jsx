@@ -1,13 +1,12 @@
 import "./Registerbox.css";
 import { Link, useNavigate } from "react-router-dom";
-import React, { useState, useEffect } from "react";
-
+import React, { useState } from "react";
 import {
   getAuth,
   createUserWithEmailAndPassword,
   sendEmailVerification,
 } from "firebase/auth";
-import { getDatabase, ref, push, onValue, get, set } from "firebase/database";
+import { getDatabase, ref, set } from "firebase/database";
 import { app } from "../../firebase/firebase";
 
 const Registerbox = () => {
@@ -15,7 +14,8 @@ const Registerbox = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userType, setUserType] = useState("");
+  const [userType, setUserType] = useState(""); // Dropdown for userType (user or admin)
+  const [roles, setRoles] = useState({ user: false, user2: false, user3: false }); // Dropdown for roles
 
   const [RegisterBtnValue, setRegisterButtonValue] = useState("Register");
   const [notification, setNotification] = useState({
@@ -31,6 +31,13 @@ const Registerbox = () => {
           ? "notification slideXto0"
           : "notification",
     });
+  };
+
+  const handleRoleChange = (role) => {
+    setRoles((prevRoles) => ({
+      ...prevRoles,
+      [role]: !prevRoles[role], // Toggle the selected role's boolean value
+    }));
   };
 
   const registerNewUser = async (e) => {
@@ -52,11 +59,13 @@ const Registerbox = () => {
       // Get the user's UID
       const uid = userCredential.user.uid;
 
-      // Set the user type in the database based on the selected type
-      const userTypeRef = ref(database, `users/${uid}/userType`);
-      await set(userTypeRef, userType);
-      const emailRef = ref(database, `users/${uid}/email`);
-      await set(emailRef, email);
+      // Set the user type and roles in the database
+      const userRef = ref(database, `users/${uid}`);
+      await set(userRef, {
+        userType: userType,
+        roles: roles,
+        email: email,
+      });
 
       // Send email verification
       await sendEmailVerification(userCredential.user);
@@ -67,7 +76,7 @@ const Registerbox = () => {
         Message: "Successfully registered!",
       });
 
-      // Optionally, you can navigate the user to a different page after successful registration
+      // Optionally, navigate the user to a different page after successful registration
       // navigate('/dashboard');
     } catch (error) {
       // Handle registration errors
@@ -100,31 +109,62 @@ const Registerbox = () => {
             </h2>
 
             <div className="inputbox">
+              {/* Dropdown for userType */}
               <select
                 name="usertype"
                 id="usertype"
                 value={userType}
-                onChange={(e) => {
-                  setUserType(e.target.value);
-                }}
+                onChange={(e) => setUserType(e.target.value)}
+                required
               >
                 <option value="" disabled>
                   Select User Type
                 </option>
                 <option value="user">User</option>
-                <option value="admin">Admin</option>
               </select>
+              <p className="para">Select Roles</p>
+
+              {/* Dropdown for roles */}
+              <div className="roles-dropdown">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={roles.user}
+                    onChange={() => handleRoleChange("user")}
+                  />
+                  M3-Reactor
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={roles.user2}
+                    onChange={() => handleRoleChange("user2")}
+                  />
+                  M3-Pressure
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={roles.user3}
+                    onChange={() => handleRoleChange("user3")}
+                  />
+                  M1-Flow
+                </label>
+              </div>
+
               <input
                 type="email"
                 placeholder="Email"
                 onChange={(e) => setEmail(e.target.value)}
                 value={email}
+                required
               />
               <input
                 type="password"
                 placeholder="Password"
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
+                required
               />
             </div>
             <Link to="/login">Back to Login!</Link>
